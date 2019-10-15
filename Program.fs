@@ -78,5 +78,26 @@ let main args =
     let methodRef2 = Array.concat [[| byte(0x0a);|]; (intToU2 19); (intToU2 24)]
     stream.Write(ReadOnlySpan methodRef2)
 
+    let accessFlags = [| byte(0x00); byte(0x20) |]
+    stream.Write(ReadOnlySpan accessFlags)
+
+    let thisClass = intToU2 16
+    stream.Write(ReadOnlySpan thisClass)
+
+    let superClass = intToU2 17
+    stream.Write(ReadOnlySpan superClass)
+
+    let interfacesCount = intToU2 0
+    stream.Write(ReadOnlySpan interfacesCount)
+
+    let fieldsCount = intToU2 0
+    stream.Write(ReadOnlySpan fieldsCount)
+
+    let methodsCount = intToU2 0
+    stream.Write(ReadOnlySpan methodsCount)
+
+    let attributesCount = intToU2 0
+    stream.Write(ReadOnlySpan attributesCount)
+
     stream.Close ()
     0
