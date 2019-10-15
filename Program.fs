@@ -28,6 +28,11 @@ let main args =
         let bytes = BitConverter.GetBytes n
         Array.Reverse bytes
         bytes.[2..3]
+    
+    let intToU4 (n : int) =
+        let bytes = BitConverter.GetBytes n
+        Array.Reverse bytes
+        bytes
 
     let utf8contents =
         Array.map<String, byte []>
@@ -46,8 +51,8 @@ let main args =
                 ; "()V"
                 ; "main"
                 ; "([Ljava/lang/String;)V"
-                ; "println"
-                ; "(I)V"
+                ; "print"
+                ; "(Ljava/lang/String;)V"
                 ; "Code"
                 ; src
                 |]
@@ -93,8 +98,62 @@ let main args =
     let fieldsCount = intToU2 0
     stream.Write(ReadOnlySpan fieldsCount)
 
-    let methodsCount = intToU2 0
+    let methodsCount = intToU2 2
     stream.Write(ReadOnlySpan methodsCount)
+
+    let method1 =
+        Array.concat
+            [ intToU2 0  // access flags
+            ; intToU2 7  // name index
+            ; intToU2 8  // descriptor index
+            ; intToU2 1  // attributes count
+            ]
+    stream.Write(ReadOnlySpan method1)
+
+    let codeAttr1 =
+        Array.concat
+            [ intToU2 13  // attribute name index
+            ; intToU4 17  // attribute length
+            ; intToU2 1  // max stack
+            ; intToU2 1  // max locals
+            ; intToU4 5  // code length
+            ;  [| byte(0x2a)  // aload_0
+                ; byte(0xb7)  // invokespecial
+                |]
+            ; intToU2 23  // method ref (java/lang/Object.<init>:()V)
+            ; [| byte(0xb1) |]  // return
+            ; intToU2 0  // exception table length
+            ; intToU2 0  // attributes count
+            ]
+    stream.Write(ReadOnlySpan codeAttr1)
+
+    let method2 =
+        Array.concat
+            [ intToU2 9   // access flags
+            ; intToU2 9   // name index
+            ; intToU2 10  // descriptor index
+            ; intToU2 1   // attributes count
+            ]
+    stream.Write(ReadOnlySpan method2)
+
+    let codeAttr2 =
+        Array.concat
+            [ intToU2 13  // attribute name index
+            ; intToU4 21  // attribute length
+            ; intToU2 2  // max stack
+            ; intToU2 1  // max locals
+            ; intToU4 9  // code length
+            ; [| byte(0xb2) |]  // getstatic
+            ; intToU2 21  // field ref (java/lang/System.out:Ljava/io/PrintStream;)
+            ; [| byte(0x12) |]  // ldc
+            ; [| byte(15) |]  // string ref
+            ; [| byte(0xb6) |]  // invokevirtual
+            ; intToU2 25  // method ref (java/io/PrintStream.println:([Ljava/lang/String;)V)
+            ; [| byte(0xb1) |]  // return
+            ; intToU2 0  // exception table length
+            ; intToU2 0  // attributes count
+            ]
+    stream.Write(ReadOnlySpan codeAttr2)
 
     let attributesCount = intToU2 0
     stream.Write(ReadOnlySpan attributesCount)
