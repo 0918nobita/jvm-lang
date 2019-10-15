@@ -57,5 +57,26 @@ let main args =
     let stringEntity = byte(8) :: ((intToU2 14) |> Array.toList) |> List.toArray
     stream.Write(ReadOnlySpan stringEntity)
 
+    let classes = Array.collect (fun index -> Array.append [| byte(7) |] <| intToU2 index) [| 1; 2; 3; 5 |]
+    stream.Write(ReadOnlySpan classes)
+
+    let nameAndType1 = Array.concat [[| byte(0x0c) |]; (intToU2 4); (intToU2 6)]
+    stream.Write(ReadOnlySpan nameAndType1)
+
+    let fieldRef = Array.concat [[| byte(9) |]; (intToU2 18); (intToU2 20)]
+    stream.Write(ReadOnlySpan fieldRef)
+
+    let nameAndType2 = Array.concat [[| byte(0x0c) |]; (intToU2 7); (intToU2 8)]
+    stream.Write(ReadOnlySpan nameAndType2)
+
+    let methodRef1 = Array.concat [[| byte(0x0a) |]; (intToU2 17); (intToU2 22)]
+    stream.Write(ReadOnlySpan methodRef1)
+
+    let nameAndType3 = Array.concat [[| byte(0x0c) |]; (intToU2 11); (intToU2 12)]
+    stream.Write(ReadOnlySpan nameAndType3)
+
+    let methodRef2 = Array.concat [[| byte(0x0a);|]; (intToU2 19); (intToU2 24)]
+    stream.Write(ReadOnlySpan methodRef2)
+
     stream.Close ()
     0
