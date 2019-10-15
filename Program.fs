@@ -31,7 +31,11 @@ let main args =
 
     let utf8contents =
         Array.map<String, byte []>
-            (fun s -> Array.append (Array.append [| byte(1) |] <| intToU2(String.length s)) (Encoding.UTF8.GetBytes s))
+            (fun s ->
+                Array.append
+                    ((byte(1) :: (intToU2(String.length s) |> Array.toList))
+                    |> List.toArray)
+                    (Encoding.UTF8.GetBytes s))
                 [| className
                 ; "java/lang/Object"
                 ; "java/lang/System"
@@ -50,7 +54,7 @@ let main args =
         |> Array.concat
     stream.Write(ReadOnlySpan utf8contents)
 
-    let stringEntity = Array.append [| byte(8); |] (intToU2 14)
+    let stringEntity = byte(8) :: ((intToU2 14) |> Array.toList) |> List.toArray
     stream.Write(ReadOnlySpan stringEntity)
 
     stream.Close ()
